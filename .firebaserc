@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "bb-portfolio"
-  }
+    "default": "bb-folio"
+  },
+  "targets": {},
+  "etags": {}
 }

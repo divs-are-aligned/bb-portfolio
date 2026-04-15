@@ -1,6 +1,7 @@
 import { SectionWrapper, SectionHeading } from "@/components/shared/SectionWrapper";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { DraggablePortrait } from "@/components/shared/DraggablePortrait";
 
 const stats = [
   { label: "Years of experience", value: "8+" },
@@ -22,6 +23,7 @@ export function About() {
 
       <div className="grid gap-12 md:grid-cols-[1fr_auto]">
         <div data-animate="about-body" className="space-y-6">
+          <DraggablePortrait className="mb-4 h-64 w-auto text-foreground md:float-right md:ml-8 md:mb-2" />
           <div className="space-y-4 text-muted-foreground leading-relaxed">
             <p>
               I was born in Rzesz&oacute;w, Poland and spent my first five years there

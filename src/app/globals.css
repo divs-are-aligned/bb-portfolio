@@ -141,3 +141,16 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* ── Hero kinetic headline + cursor-tracked gradient ─────── */
+.hero-section {
+  --hero-mx: 50%;
+  --hero-my: 50%;
+}
+.hero-headline {
+  color: var(--foreground);
+}
+.hero-letter {
+  color: var(--foreground);
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}

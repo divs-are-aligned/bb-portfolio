@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegistration";
+import { BackgroundGrid } from "@/components/shared/BackgroundGrid";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
@@ -66,6 +67,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark">
           <TooltipProvider>
             <ServiceWorkerRegistration />
+            <BackgroundGrid />
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />
