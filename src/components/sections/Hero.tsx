@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDownIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GitHubIcon, LinkedInIcon } from "@/components/shared/Icons";
@@ -10,9 +10,30 @@ const LAST = "Budak";
 const LETTER_RADIUS = 260;
 const LETTER_PULL = 18;
 
+const TITLES = [
+  "Technologist",
+  "eCommerce strategist",
+  "Design-system gardener",
+  "Accessibility advocate",
+  "UI & UX obsessive",
+  "Self-described creative",
+  "Platycerium keeper",
+  "Vinyl collector",
+];
+const TITLE_INTERVAL_MS = 2600;
+
 export function Hero() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const headlineRef = useRef<HTMLHeadingElement | null>(null);
+  const [titleIndex, setTitleIndex] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => {
+      setTitleIndex((i) => (i + 1) % TITLES.length);
+    }, TITLE_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -79,7 +100,7 @@ export function Hero() {
       <div className="max-w-5xl">
         <p
           data-animate="hero-item"
-          className="mb-6 font-mono text-[11px] uppercase tracking-[0.1em] text-accent-foreground"
+          className="mb-6 font-mono text-xs uppercase tracking-[0.1em] text-accent-foreground"
         >
           Hello, I&apos;m
         </p>
@@ -117,12 +138,18 @@ export function Hero() {
           </span>
         </h1>
 
-        <p
+        <div
           data-animate="hero-item"
-          className="mb-6 font-sans text-2xl font-medium text-muted-foreground sm:text-3xl"
+          className="relative mb-6 h-[1.4em] overflow-hidden font-sans text-2xl font-medium text-muted-foreground sm:text-3xl"
+          aria-live="polite"
         >
-          Technologist
-        </p>
+          <span
+            key={TITLES[titleIndex]}
+            className="inline-block animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            {TITLES[titleIndex]}
+          </span>
+        </div>
         <p
           data-animate="hero-item"
           className="mb-12 max-w-lg text-base leading-relaxed text-muted-foreground"
@@ -138,8 +165,8 @@ export function Hero() {
           data-animate="hero-item"
           className="flex flex-wrap items-center gap-4"
         >
-          <Button size="lg" nativeButton={false} render={<a href="#projects" />}>
-            View Projects
+          <Button size="lg" nativeButton={false} render={<a href="/plants" />}>
+            Explore Plants
           </Button>
           <Button
             variant="outline"

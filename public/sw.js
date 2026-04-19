@@ -1,4 +1,4 @@
-const CACHE_NAME = "bb-portfolio-v1";
+const CACHE_NAME = "bb-portfolio-v2";
 const OFFLINE_URL = "/";
 
 self.addEventListener("install", (event) => {
@@ -17,21 +17,23 @@ self.addEventListener("activate", (event) => {
           keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
         )
       )
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.mode === "navigate") {
+  const req = event.request;
+  if (req.method !== "GET") return;
+
+  if (req.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match(OFFLINE_URL))
+      fetch(req).catch(() => caches.match(OFFLINE_URL))
     );
     return;
   }
 
+  // Network-first: always fetch fresh; fall back to cache only if offline.
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((cached) => cached || fetch(event.request))
+    fetch(req).catch(() => caches.match(req))
   );
 });

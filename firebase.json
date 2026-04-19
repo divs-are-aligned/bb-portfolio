@@ -1,4 +1,8 @@
 {
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20"
+  },
   "hosting": {
     "public": "out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
@@ -23,6 +27,13 @@
       {
         "source": "**/*.html",
         "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/platycerium{,/**}",
+        "destination": "/plants/platycerium/",
+        "type": 301
       }
     ],
     "rewrites": [

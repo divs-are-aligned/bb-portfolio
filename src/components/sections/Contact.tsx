@@ -56,7 +56,7 @@ export function Contact() {
             >
               <social.icon className="size-4 shrink-0" />
               <span className="flex flex-col items-start text-left">
-                <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+                <span className="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
                   {social.label}
                 </span>
                 <span className="font-mono text-[12px]">{social.display}</span>

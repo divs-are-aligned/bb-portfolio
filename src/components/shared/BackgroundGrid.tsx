@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import {
+  useBackgroundConfig,
+  type BackgroundConfig,
+  type BackgroundSymbol,
+} from "./BackgroundConfig";
 
 type Cross = {
   x: number;
@@ -9,16 +14,47 @@ type Cross = {
   heat: number;
 };
 
-const SPACING = 28;
-const ARM = 4;
-const STROKE = 1;
-const MOUSE_RADIUS = 140;
-const MAX_SPIN = Math.PI * 2;
-const HEAT_DECAY = 0.03;
 const TOP_FADE = 80;
 
 export function BackgroundGrid() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { config, interactionPaused } = useBackgroundConfig();
+  const configRef = useRef<BackgroundConfig>(config);
+  const pausedRef = useRef(false);
+  const rebuildRef = useRef(false);
+  const cachedColors = useRef({ fg: "", accent: "" });
+
+  useEffect(() => {
+    const prev = configRef.current;
+    configRef.current = config;
+    if (prev.spacing !== config.spacing) {
+      rebuildRef.current = true;
+    }
+  }, [config]);
+
+  useEffect(() => {
+    pausedRef.current = interactionPaused;
+  }, [interactionPaused]);
+
+  // Cache CSS color vars. Refresh when palette or theme changes (detected via
+  // MutationObserver on documentElement's class/style) rather than reading
+  // getComputedStyle every frame.
+  useEffect(() => {
+    const refresh = () => {
+      const styles = getComputedStyle(document.documentElement);
+      cachedColors.current.fg =
+        styles.getPropertyValue("--foreground").trim() || "#D4F5E9";
+      cachedColors.current.accent =
+        styles.getPropertyValue("--primary").trim() || cachedColors.current.fg;
+    };
+    refresh();
+    const observer = new MutationObserver(refresh);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "style"],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,14 +75,15 @@ export function BackgroundGrid() {
     let raf = 0;
 
     const buildGrid = () => {
+      const spacing = configRef.current.spacing;
       crosses = [];
-      const cols = Math.ceil(width / SPACING) + 2;
-      const rows = Math.ceil(height / SPACING) + 2;
+      const cols = Math.ceil(width / spacing) + 2;
+      const rows = Math.ceil(height / spacing) + 2;
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           crosses.push({
-            x: c * SPACING,
-            y: r * SPACING,
+            x: c * spacing,
+            y: r * spacing,
             baseAngle: 0,
             heat: 0,
           });
@@ -84,57 +121,118 @@ export function BackgroundGrid() {
       mouse.y = -9999;
     };
 
-    // Horizontal falloff: 1 at edges, 0 in center column.
     const columnMask = (x: number) => {
       const center = width / 2;
       const half = width / 2;
-      const t = Math.abs(x - center) / half; // 0 center -> 1 edge
-      // soft edge: stay clear through middle ~70% of viewport width
+      const t = Math.abs(x - center) / half;
       return Math.max(0, (t - 0.55) / 0.45);
     };
 
+    const drawSymbol = (
+      size: number,
+      angle: number,
+      symbol: BackgroundSymbol,
+    ) => {
+      ctx.rotate(angle);
+      ctx.beginPath();
+      switch (symbol) {
+        case "cross":
+          ctx.moveTo(-size, 0);
+          ctx.lineTo(size, 0);
+          ctx.moveTo(0, -size);
+          ctx.lineTo(0, size);
+          ctx.stroke();
+          break;
+        case "x":
+          ctx.moveTo(-size * 0.8, -size * 0.8);
+          ctx.lineTo(size * 0.8, size * 0.8);
+          ctx.moveTo(-size * 0.8, size * 0.8);
+          ctx.lineTo(size * 0.8, -size * 0.8);
+          ctx.stroke();
+          break;
+        case "star": {
+          ctx.moveTo(-size, 0);
+          ctx.lineTo(size, 0);
+          ctx.moveTo(0, -size);
+          ctx.lineTo(0, size);
+          const s = size * 0.6;
+          ctx.moveTo(-s, -s);
+          ctx.lineTo(s, s);
+          ctx.moveTo(-s, s);
+          ctx.lineTo(s, -s);
+          ctx.stroke();
+          break;
+        }
+        case "dot":
+          ctx.arc(0, 0, Math.max(0.5, size * 0.35), 0, Math.PI * 2);
+          ctx.fill();
+          break;
+        case "circle":
+          ctx.arc(0, 0, Math.max(0.5, size * 0.75), 0, Math.PI * 2);
+          ctx.stroke();
+          break;
+        case "dash":
+          ctx.moveTo(-size, 0);
+          ctx.lineTo(size, 0);
+          ctx.stroke();
+          break;
+        case "triangle":
+          ctx.moveTo(0, -size);
+          ctx.lineTo(size * 0.9, size * 0.75);
+          ctx.lineTo(-size * 0.9, size * 0.75);
+          ctx.closePath();
+          ctx.stroke();
+          break;
+      }
+    };
+
     const draw = () => {
+      if (rebuildRef.current) {
+        buildGrid();
+        rebuildRef.current = false;
+      }
+      const cfg = configRef.current;
+      const mouseRadius = cfg.mouseRadius;
+      const maxSpin = (cfg.maxSpinDeg * Math.PI) / 180;
+      const heatDecay = cfg.heatDecay;
+      const size = cfg.size;
+
       ctx.clearRect(0, 0, width, height);
-      const styles = getComputedStyle(document.documentElement);
-      const fg =
-        styles.getPropertyValue("--foreground").trim() || "oklch(0.145 0 0)";
-      const accent =
-        styles.getPropertyValue("--primary").trim() || fg;
-      ctx.lineWidth = STROKE;
+      const fg = cachedColors.current.fg;
+      const accent = cachedColors.current.accent;
+      ctx.lineWidth = cfg.strokeWidth;
       ctx.lineCap = "round";
 
-      // Base density: crosses visible from the top, intensifies slightly with scroll.
       const densityFloor = 0.6 + scrollProgress * 0.4;
+      const paused = pausedRef.current;
 
       for (const cross of crosses) {
         const mask = columnMask(cross.x);
         const topFade = Math.min(1, cross.y / TOP_FADE);
-        const visibility = mask * densityFloor * topFade;
-        if (visibility < 0.04) continue;
+        let visibility = mask * densityFloor * topFade;
 
         const dx = cross.x - mouse.x;
         const dy = cross.y - mouse.y;
         const dist = Math.hypot(dx, dy);
         let angle = cross.baseAngle;
-        if (dist < MOUSE_RADIUS) {
-          const influence = 1 - dist / MOUSE_RADIUS;
-          if (!reduceMotion) angle += influence * MAX_SPIN;
+
+        if (!paused && dist < mouseRadius && dist > 0.01) {
+          const influence = 1 - dist / mouseRadius;
+          if (!reduceMotion) angle += influence * maxSpin;
           if (influence > cross.heat) cross.heat = influence;
         }
 
-        cross.heat = Math.max(0, cross.heat - HEAT_DECAY);
+        if (visibility < 0.04) continue;
+
+        cross.heat = Math.max(0, cross.heat - heatDecay);
 
         ctx.globalAlpha = visibility * (0.55 + cross.heat * 0.45);
-        ctx.strokeStyle = cross.heat > 0.01 ? accent : fg;
+        const color = cross.heat > 0.01 ? accent : fg;
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
         ctx.save();
         ctx.translate(cross.x, cross.y);
-        ctx.rotate(angle);
-        ctx.beginPath();
-        ctx.moveTo(-ARM, 0);
-        ctx.lineTo(ARM, 0);
-        ctx.moveTo(0, -ARM);
-        ctx.lineTo(0, ARM);
-        ctx.stroke();
+        drawSymbol(size, angle, cfg.symbol);
         ctx.restore();
       }
       ctx.globalAlpha = 1;

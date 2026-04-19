@@ -1,0 +1,37 @@
+# Bart Budak
+
+> Personal portfolio and educational hub of Bart Budak, a self-taught software engineer and technologist based in Seattle. Director of IT & eCommerce at Seattle Chocolate Company. Eight-plus years across web accessibility, design systems, developer experience, and front-end architecture.
+
+Bart's work blends rigorous craft (accessibility, design systems, eCommerce) with personal curiosity (Platycerium care, vinyl collecting, Dungeon Crawler Carl). The site is intentionally hand-built with creative background effects and is designed to feel human rather than templated.
+
+## Pages
+
+- [Home](https://bartbudak.io/): Hero, about, experience, skills, and contact.
+- [Plants](https://bartbudak.io/plants/): Plant hub — links to the Platycerium catalog and the Plant S.O.S. help form.
+- [Platycerium Catalog](https://bartbudak.io/plants/platycerium/): A curated catalog of 18 Platycerium (staghorn fern) species with care difficulty, origin, propagation, biogeographical region, and hybrid information. Dedicated to Herb Halling, whose [halling.com](https://www.halling.com/Platyceriums/) site is the primary source.
+- [Plant S.O.S.](https://bartbudak.io/plants/help/): Upload a photo of a struggling plant, answer diagnostic questions (watering, soil, light, pests), and send it to Bart for help.
+
+## About Bart
+
+- Role: Director of IT & eCommerce, Seattle Chocolate Company
+- Prior: Senior Software Engineer at McKinsey & Company (design system lead for 1,000+ engineers); Software Engineer at Optum (UnitedHealth Group) where he self-taught his way into engineering.
+- Specialties: React / Next.js / TypeScript, web accessibility (WCAG 2.1), design systems, developer experience, Shopify / Klaviyo, eCommerce strategy.
+- Notable: Helped Maeve Chocolate become the first Dungeon Crawler Carl food collaboration — the biggest moment in the brand's history.
+
+## Platycerium
+
+The Platycerium section is an open, community-focused reference. Information is sourced primarily from Herb Halling's now-unmaintained halling.com, with additional phylogeny data from Kreier & Schneider (American Journal of Botany, 2006). Each species entry includes:
+
+- Scientific name, common names, native origin
+- Numeric care difficulty (1 = easiest, 5 = most difficult)
+- A short "why this difficulty" explanation
+- Propagation (pups, spore, or both)
+- Biogeographical region
+- Spore-form pattern
+- Known named hybrids
+- Closest relatives (by DNA clade)
+
+## Contact
+
+- GitHub: https://github.com/divs-are-aligned
+- LinkedIn: https://linkedin.com/in/bartbudak
