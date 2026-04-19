@@ -6,15 +6,67 @@ import {
   type BackgroundConfig,
   type BackgroundSymbol,
 } from "./BackgroundConfig";
+import {
+  prepareWithSegments,
+  layoutWithLines,
+  type PreparedTextWithSegments,
+} from "@chenglou/pretext";
 
-type Cross = {
+/* ── Glyph map: every non-text symbol → a Unicode character ── */
+
+const GLYPH: Record<string, string> = {
+  cross: "+",
+  x: "\u00D7", // ×
+  star: "\u2733", // ✳
+  dot: "\u2022", // •
+  circle: "\u25CB", // ○
+  dash: "\u2014", // —
+  triangle: "\u25B3", // △
+  diamond: "\u25C7", // ◇
+  arrow: "\u2191", // ↑
+  wave: "\u223C", // ∼
+  infinity: "\u221E", // ∞
+};
+
+type GridCell = {
   x: number;
   y: number;
+  col: number;
+  row: number;
   baseAngle: number;
   heat: number;
 };
 
 const TOP_FADE = 80;
+
+/* ── Pretext cache for text tiles ─────────────────────────── */
+
+type TextTileCache = {
+  key: string;
+  prepared: PreparedTextWithSegments;
+  lines: { text: string }[];
+  charWidth: number;
+};
+
+function buildTextTileCache(
+  text: string,
+  fontSize: number,
+): TextTileCache | null {
+  if (typeof document === "undefined") return null;
+  const font = `${fontSize}px "JetBrains Mono", monospace`;
+  const prepared = prepareWithSegments(text, font);
+  // Lay out at a very wide width so it stays a single line
+  const { lines } = layoutWithLines(prepared, 10000, fontSize);
+  // Estimate per-char width from the prepared text
+  const charWidth = lines[0]
+    ? (lines[0] as { width?: number }).width
+      ? ((lines[0] as { width?: number }).width! / text.length)
+      : fontSize * 0.6
+    : fontSize * 0.6;
+  return { key: `${text}:${fontSize}`, prepared, lines, charWidth };
+}
+
+/* ── Component ────────────────────────────────────────────── */
 
 export function BackgroundGrid() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -23,12 +75,24 @@ export function BackgroundGrid() {
   const pausedRef = useRef(false);
   const rebuildRef = useRef(false);
   const cachedColors = useRef({ fg: "", accent: "" });
+  const textTileCacheRef = useRef<TextTileCache | null>(null);
 
   useEffect(() => {
     const prev = configRef.current;
     configRef.current = config;
-    if (prev.spacing !== config.spacing) {
+    if (prev.spacing !== config.spacing || prev.symbol !== config.symbol) {
       rebuildRef.current = true;
+    }
+
+    // Rebuild Pretext cache when switching to a text symbol
+    if (config.symbol.startsWith("text:")) {
+      const text = config.symbol.slice(5);
+      const fontSize = Math.round(config.size * 2.4);
+      const cached = textTileCacheRef.current;
+      const key = `${text}:${fontSize}`;
+      if (!cached || cached.key !== key) {
+        textTileCacheRef.current = buildTextTileCache(text, fontSize);
+      }
     }
   }, [config]);
 
@@ -36,14 +100,11 @@ export function BackgroundGrid() {
     pausedRef.current = interactionPaused;
   }, [interactionPaused]);
 
-  // Cache CSS color vars. Refresh when palette or theme changes (detected via
-  // MutationObserver on documentElement's class/style) rather than reading
-  // getComputedStyle every frame.
   useEffect(() => {
     const refresh = () => {
       const styles = getComputedStyle(document.documentElement);
       cachedColors.current.fg =
-        styles.getPropertyValue("--foreground").trim() || "#D4F5E9";
+        styles.getPropertyValue("--foreground").trim() || "#E6DDF2";
       cachedColors.current.accent =
         styles.getPropertyValue("--primary").trim() || cachedColors.current.fg;
     };
@@ -69,21 +130,23 @@ export function BackgroundGrid() {
     let width = 0;
     let height = 0;
     let dpr = 1;
-    let crosses: Cross[] = [];
+    let cells: GridCell[] = [];
     const mouse = { x: -9999, y: -9999 };
     let scrollProgress = 0;
     let raf = 0;
 
     const buildGrid = () => {
       const spacing = configRef.current.spacing;
-      crosses = [];
+      cells = [];
       const cols = Math.ceil(width / spacing) + 2;
       const rows = Math.ceil(height / spacing) + 2;
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          crosses.push({
+          cells.push({
             x: c * spacing,
             y: r * spacing,
+            col: c,
+            row: r,
             baseAngle: 0,
             heat: 0,
           });
@@ -128,62 +191,32 @@ export function BackgroundGrid() {
       return Math.max(0, (t - 0.55) / 0.45);
     };
 
-    const drawSymbol = (
+    const drawGlyph = (
+      symbol: BackgroundSymbol,
       size: number,
       angle: number,
-      symbol: BackgroundSymbol,
+      col: number,
+      row: number,
     ) => {
+      const fontSize = Math.round(size * 2.4);
+      ctx.font = `${fontSize}px "JetBrains Mono", monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.rotate(angle);
-      ctx.beginPath();
-      switch (symbol) {
-        case "cross":
-          ctx.moveTo(-size, 0);
-          ctx.lineTo(size, 0);
-          ctx.moveTo(0, -size);
-          ctx.lineTo(0, size);
-          ctx.stroke();
-          break;
-        case "x":
-          ctx.moveTo(-size * 0.8, -size * 0.8);
-          ctx.lineTo(size * 0.8, size * 0.8);
-          ctx.moveTo(-size * 0.8, size * 0.8);
-          ctx.lineTo(size * 0.8, -size * 0.8);
-          ctx.stroke();
-          break;
-        case "star": {
-          ctx.moveTo(-size, 0);
-          ctx.lineTo(size, 0);
-          ctx.moveTo(0, -size);
-          ctx.lineTo(0, size);
-          const s = size * 0.6;
-          ctx.moveTo(-s, -s);
-          ctx.lineTo(s, s);
-          ctx.moveTo(-s, s);
-          ctx.lineTo(s, -s);
-          ctx.stroke();
-          break;
-        }
-        case "dot":
-          ctx.arc(0, 0, Math.max(0.5, size * 0.35), 0, Math.PI * 2);
-          ctx.fill();
-          break;
-        case "circle":
-          ctx.arc(0, 0, Math.max(0.5, size * 0.75), 0, Math.PI * 2);
-          ctx.stroke();
-          break;
-        case "dash":
-          ctx.moveTo(-size, 0);
-          ctx.lineTo(size, 0);
-          ctx.stroke();
-          break;
-        case "triangle":
-          ctx.moveTo(0, -size);
-          ctx.lineTo(size * 0.9, size * 0.75);
-          ctx.lineTo(-size * 0.9, size * 0.75);
-          ctx.closePath();
-          ctx.stroke();
-          break;
+
+      // Text tile mode — each cell shows a character from the word,
+      // tiled so rows read left-to-right across the grid
+      if (symbol.startsWith("text:")) {
+        const text = symbol.slice(5);
+        const charIndex = ((row * 7 + col) % text.length + text.length) % text.length;
+        const ch = text[charIndex] === " " ? "\u00B7" : text[charIndex];
+        ctx.fillText(ch, 0, 0);
+        return;
       }
+
+      // Single glyph mode
+      const glyph = GLYPH[symbol];
+      if (glyph) ctx.fillText(glyph, 0, 0);
     };
 
     const draw = () => {
@@ -206,33 +239,33 @@ export function BackgroundGrid() {
       const densityFloor = 0.6 + scrollProgress * 0.4;
       const paused = pausedRef.current;
 
-      for (const cross of crosses) {
-        const mask = columnMask(cross.x);
-        const topFade = Math.min(1, cross.y / TOP_FADE);
+      for (const cell of cells) {
+        const mask = columnMask(cell.x);
+        const topFade = Math.min(1, cell.y / TOP_FADE);
         let visibility = mask * densityFloor * topFade;
 
-        const dx = cross.x - mouse.x;
-        const dy = cross.y - mouse.y;
+        const dx = cell.x - mouse.x;
+        const dy = cell.y - mouse.y;
         const dist = Math.hypot(dx, dy);
-        let angle = cross.baseAngle;
+        let angle = cell.baseAngle;
 
         if (!paused && dist < mouseRadius && dist > 0.01) {
           const influence = 1 - dist / mouseRadius;
           if (!reduceMotion) angle += influence * maxSpin;
-          if (influence > cross.heat) cross.heat = influence;
+          if (influence > cell.heat) cell.heat = influence;
         }
 
         if (visibility < 0.04) continue;
 
-        cross.heat = Math.max(0, cross.heat - heatDecay);
+        cell.heat = Math.max(0, cell.heat - heatDecay);
 
-        ctx.globalAlpha = visibility * (0.55 + cross.heat * 0.45);
-        const color = cross.heat > 0.01 ? accent : fg;
+        ctx.globalAlpha = visibility * (0.55 + cell.heat * 0.45);
+        const color = cell.heat > 0.01 ? accent : fg;
         ctx.strokeStyle = color;
         ctx.fillStyle = color;
         ctx.save();
-        ctx.translate(cross.x, cross.y);
-        drawSymbol(size, angle, cfg.symbol);
+        ctx.translate(cell.x, cell.y);
+        drawGlyph(cfg.symbol, size, angle, cell.col, cell.row);
         ctx.restore();
       }
       ctx.globalAlpha = 1;

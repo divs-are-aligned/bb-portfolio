@@ -124,7 +124,6 @@ export function PlantHelp() {
     setError("");
 
     try {
-      // Upload images to Storage
       const imageUrls = await Promise.all(
         formData.images.map(async (file) => {
           const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
@@ -137,7 +136,6 @@ export function PlantHelp() {
         }),
       );
 
-      // Write to Firestore
       await addDoc(collection(db, "plant-help"), {
         name: formData.name.trim(),
         email: formData.email.trim(),
@@ -165,20 +163,6 @@ export function PlantHelp() {
     submitForm(form);
   };
 
-  const handlePanic = () => {
-    const panicForm: FormState = {
-      ...form,
-      panicMode: true,
-      notes: form.notes || "I have no idea what's wrong. Please just help.",
-      watering: form.watering || "whenever",
-      soil: form.soil || "dry",
-      light: form.light || "low-light",
-      pests: form.pests || "refuse",
-    };
-    setForm(panicForm);
-    // small delay so user sees the form fill in before it submits
-    setTimeout(() => submitForm(panicForm), 600);
-  };
 
   /* ── Success state ───────────────────────────────────── */
 
@@ -187,12 +171,11 @@ export function PlantHelp() {
       <SectionWrapper id="plant-help">
         <div className="flex flex-col items-center justify-center gap-6 py-20 text-center">
           <h2 className="font-heading text-5xl font-medium sm:text-6xl">
-            {form.panicMode ? "Help is on the way" : "Got it"}
+            Got it
           </h2>
           <p className="max-w-md text-muted-foreground">
-            {form.panicMode
-              ? "I can feel the panic through the screen. I'll take a look and get back to you ASAP."
-              : "Thanks for sending this over. I'll check out your plant situation and get back to you soon."}
+            Thanks for sending this over. I&apos;ll check out your plant
+            situation and get back to you soon.
           </p>
           <button
             type="button"
@@ -398,33 +381,33 @@ export function PlantHelp() {
         )}
 
         {/* ── Actions ──────────────────────────────────────── */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            type="submit"
-            disabled={sending}
-            className="rounded-full bg-primary px-8 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-          >
-            {sending ? "Sending\u2026" : "Send it"}
-          </button>
-
-          <div className="relative">
-            <button
-              type="button"
-              onClick={handlePanic}
-              disabled={sending}
-              className="group relative w-full overflow-hidden rounded-full bg-destructive px-8 py-3 text-sm font-medium text-white transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-destructive/25 active:scale-[0.98] disabled:opacity-50 sm:w-auto"
-            >
-              <span className="relative z-10">
-                WTF IDK — PLZ HELP
-              </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-destructive via-red-500 to-destructive bg-[length:200%_100%] opacity-0 transition-opacity group-hover:animate-pulse group-hover:opacity-100" />
-            </button>
-            <p className="mt-1.5 text-center text-[10px] text-muted-foreground sm:text-right">
-              Auto-submits. No questions asked.
-            </p>
-          </div>
-        </div>
+        <button
+          type="submit"
+          disabled={sending}
+          className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+        >
+          {sending ? "Sending\u2026" : "Submit"}
+        </button>
       </form>
+
+      {/* ── House visits ──────────────────────────────────── */}
+      <div className="mt-16 rounded-lg border border-border/60 bg-card/40 p-6 text-center backdrop-blur-sm">
+        <h3 className="mb-2 font-heading text-xl font-medium">
+          Seattle area? I do house visits.
+        </h3>
+        <p className="mb-4 text-sm text-muted-foreground">
+          If you&apos;re local and want hands-on help with your plants, hit me
+          up and I&apos;ll come take a look in person.
+        </p>
+        <a
+          href="https://instagram.com/bartbudak"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          @bartbudak on Instagram
+        </a>
+      </div>
     </SectionWrapper>
   );
 }

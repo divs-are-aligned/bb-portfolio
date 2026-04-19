@@ -56,22 +56,6 @@ const VAR_MAP: Record<keyof PaletteVars, string> = {
 
 export const LIGHT_PALETTES: Palette[] = [
   {
-    id: "vapor-light",
-    name: "Vapor Pastel",
-    mode: "light",
-    vars: {
-      background: "#F5EFF8",
-      foreground: "#1E1434",
-      primary: "#C43A6E",
-      primaryForeground: "#F5EFF8",
-      mutedForeground: "#6B5A80",
-      card: "#EDE5F3",
-      border: "#D4C6E0",
-      accent: "#E2D4EF",
-      accentForeground: "#8A2B5A",
-    },
-  },
-  {
     id: "paper",
     name: "Paper",
     mode: "light",
@@ -151,25 +135,25 @@ export const LIGHT_PALETTES: Palette[] = [
       accentForeground: "#1a3d7a",
     },
   },
+  {
+    id: "vapor-light",
+    name: "Vapor Pastel",
+    mode: "light",
+    vars: {
+      background: "#F5EFF8",
+      foreground: "#1E1434",
+      primary: "#C43A6E",
+      primaryForeground: "#F5EFF8",
+      mutedForeground: "#6B5A80",
+      card: "#EDE5F3",
+      border: "#D4C6E0",
+      accent: "#E2D4EF",
+      accentForeground: "#8A2B5A",
+    },
+  },
 ];
 
 export const DARK_PALETTES: Palette[] = [
-  {
-    id: "vaporwave",
-    name: "Vaporwave",
-    mode: "dark",
-    vars: {
-      background: "#0D0B1E",
-      foreground: "#E6DDF2",
-      primary: "#FF6B9D",
-      primaryForeground: "#0D0B1E",
-      mutedForeground: "#9B8AB8",
-      card: "#1A1232",
-      border: "#2D1F4E",
-      accent: "#3D2068",
-      accentForeground: "#FF6B9D",
-    },
-  },
   {
     id: "nebula",
     name: "Nebula Green",
@@ -250,11 +234,27 @@ export const DARK_PALETTES: Palette[] = [
       accentForeground: "#a372f0",
     },
   },
+  {
+    id: "vaporwave",
+    name: "Vaporwave",
+    mode: "dark",
+    vars: {
+      background: "#0D0B1E",
+      foreground: "#E6DDF2",
+      primary: "#FF6B9D",
+      primaryForeground: "#0D0B1E",
+      mutedForeground: "#9B8AB8",
+      card: "#1A1232",
+      border: "#2D1F4E",
+      accent: "#3D2068",
+      accentForeground: "#FF6B9D",
+    },
+  },
 ];
 
 const ALL_PALETTES = [...LIGHT_PALETTES, ...DARK_PALETTES];
-const DEFAULT_LIGHT_ID = "vapor-light";
-const DEFAULT_DARK_ID = "vaporwave";
+const DEFAULT_LIGHT_ID = "paper";
+const DEFAULT_DARK_ID = "nebula";
 const STORAGE_KEY = "bb-color-palette-v1";
 
 type CustomOverrides = Partial<Record<CustomizableKey, string>>;

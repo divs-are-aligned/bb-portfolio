@@ -10,15 +10,28 @@ import {
   type BackgroundSymbol,
 } from "./BackgroundConfig";
 
-const symbolGlyph: Record<BackgroundSymbol, string> = {
-  cross: "+",
-  x: "×",
-  star: "✳",
-  dot: "•",
-  circle: "○",
-  dash: "—",
-  triangle: "△",
-};
+function symbolGlyph(s: BackgroundSymbol): string {
+  if (s.startsWith("text:")) return s.slice(5).charAt(0);
+  const map: Record<string, string> = {
+    cross: "+",
+    x: "\u00D7",
+    star: "\u2733",
+    dot: "\u2022",
+    circle: "\u25CB",
+    dash: "\u2014",
+    triangle: "\u25B3",
+    diamond: "\u25C7",
+    arrow: "\u2191",
+    wave: "\u223C",
+    infinity: "\u221E",
+  };
+  return map[s] ?? s;
+}
+
+function symbolLabel(s: BackgroundSymbol): string {
+  if (s.startsWith("text:")) return s.slice(5);
+  return s;
+}
 
 export function BackgroundSettings() {
   const {
@@ -129,26 +142,54 @@ export function BackgroundSettings() {
 
           <Field label="Symbol">
             <div className="grid grid-cols-4 gap-1.5">
-              {BACKGROUND_SYMBOLS.map((s) => {
-                const active = config.symbol === s;
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setConfig({ symbol: s })}
-                    aria-pressed={active}
-                    title={s}
-                    className={[
-                      "flex h-10 items-center justify-center rounded-md border text-lg transition-colors",
-                      active
-                        ? "border-primary bg-primary/15 text-primary"
-                        : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground",
-                    ].join(" ")}
-                  >
-                    <span aria-hidden="true">{symbolGlyph[s]}</span>
-                  </button>
-                );
-              })}
+              {BACKGROUND_SYMBOLS.filter((s) => !s.startsWith("text:")).map(
+                (s) => {
+                  const active = config.symbol === s;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setConfig({ symbol: s })}
+                      aria-pressed={active}
+                      title={s}
+                      className={[
+                        "flex h-10 items-center justify-center rounded-md border text-lg transition-colors",
+                        active
+                          ? "border-primary bg-primary/15 text-primary"
+                          : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground",
+                      ].join(" ")}
+                    >
+                      <span aria-hidden="true">{symbolGlyph(s)}</span>
+                    </button>
+                  );
+                },
+              )}
+            </div>
+          </Field>
+
+          <Field label="Text tiles">
+            <div className="flex flex-col gap-1.5">
+              {BACKGROUND_SYMBOLS.filter((s) => s.startsWith("text:")).map(
+                (s) => {
+                  const active = config.symbol === s;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setConfig({ symbol: s })}
+                      aria-pressed={active}
+                      className={[
+                        "flex h-9 items-center justify-center rounded-md border font-mono text-xs uppercase tracking-[0.1em] transition-colors",
+                        active
+                          ? "border-primary bg-primary/15 text-primary"
+                          : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground",
+                      ].join(" ")}
+                    >
+                      {symbolLabel(s)}
+                    </button>
+                  );
+                },
+              )}
             </div>
           </Field>
 

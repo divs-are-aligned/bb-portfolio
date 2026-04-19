@@ -16,6 +16,12 @@ export const BACKGROUND_SYMBOLS = [
   "circle",
   "dash",
   "triangle",
+  "diamond",
+  "arrow",
+  "wave",
+  "infinity",
+  "text:PLATYCERIUM",
+  "text:BART BUDAK",
 ] as const;
 
 export type BackgroundSymbol = (typeof BACKGROUND_SYMBOLS)[number];
@@ -33,7 +39,7 @@ export type BackgroundConfig = {
 export const DEFAULT_BACKGROUND_CONFIG: BackgroundConfig = {
   symbol: "star",
   spacing: 37,
-  size: 10,
+  size: 8,
   strokeWidth: 3,
   mouseRadius: 200,
   maxSpinDeg: 120,
@@ -162,7 +168,66 @@ export const BACKGROUND_PRESETS: BackgroundPreset[] = [
       mouseRadius: 75,
       maxSpinDeg: 180,
       heatDecay: 0.04,
-
+    },
+  },
+  {
+    name: "Diamonds",
+    config: {
+      symbol: "diamond",
+      spacing: 30,
+      size: 5,
+      strokeWidth: 0.8,
+      mouseRadius: 90,
+      maxSpinDeg: 360,
+      heatDecay: 0.025,
+    },
+  },
+  {
+    name: "Arrows",
+    config: {
+      symbol: "arrow",
+      spacing: 28,
+      size: 6,
+      strokeWidth: 1,
+      mouseRadius: 100,
+      maxSpinDeg: 720,
+      heatDecay: 0.02,
+    },
+  },
+  {
+    name: "Ocean",
+    config: {
+      symbol: "wave",
+      spacing: 24,
+      size: 5,
+      strokeWidth: 1,
+      mouseRadius: 80,
+      maxSpinDeg: 180,
+      heatDecay: 0.03,
+    },
+  },
+  {
+    name: "Platycerium",
+    config: {
+      symbol: "text:PLATYCERIUM",
+      spacing: 44,
+      size: 5,
+      strokeWidth: 1,
+      mouseRadius: 120,
+      maxSpinDeg: 30,
+      heatDecay: 0.015,
+    },
+  },
+  {
+    name: "Signature",
+    config: {
+      symbol: "text:BART BUDAK",
+      spacing: 44,
+      size: 5,
+      strokeWidth: 1,
+      mouseRadius: 120,
+      maxSpinDeg: 20,
+      heatDecay: 0.015,
     },
   },
 ];

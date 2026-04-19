@@ -11,7 +11,9 @@
     "deploy:preview": "firebase hosting:channel:deploy preview-$(date +%s) --expires 1d"
   },
   "dependencies": {
+    "98.css": "^0.1.21",
     "@base-ui/react": "^1.4.0",
+    "@chenglou/pretext": "^0.0.5",
     "@gsap/react": "^2.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
