@@ -44,6 +44,7 @@ export type Platycerium = {
   summary?: string; // 2–4 line overview shown in the card
   notes?: string;   // full prose shown when expanded
   difficultyReason?: string; // short explanation of the difficulty rating
+  physicalDescription?: string; // morphological overview: shields, fertile fronds, bud, size
   imageUrl?: string;
   dataFilled: boolean;
 };
@@ -65,6 +66,8 @@ export const platyceriums: Platycerium[] = [
       "P. ridleyi",
       "P. madagascariense",
     ],
+    physicalDescription:
+      "A medium-sized pup-forming species occurring in two distinct forms. The African form produces yellow-green, waxy, nearly hairless shield fronds that turn rich brown when dead. The Madagascan form has darker green shields covered in trichomes; dead shields become nearly black. Under adequate light the Madagascan form develops characteristic folds in the upper half of each shield. Fertile fronds are narrow with two or three divisions and frequently show a fold at the center of the first division. Spore patches occur between the first and second frond division. The Madagascan form includes both wide-frond and narrow-frond variants, the latter traceable to early importations by Marcel Lecoufle.",
     difficultyReason:
       "Platycerium alcicorne pups freely, is slightly more cold-tolerant than most platys, and has a predictable winter-dormant rhythm. Minimizing water during dormancy is straightforward and the plant recovers reliably.",
     summary:
@@ -89,6 +92,8 @@ export const platyceriums: Platycerium[] = [
       "'Japanese Hybrid'",
     ],
     closestRelatives: ["P. hillii", "P. veitchii", "P. willinckii"],
+    physicalDescription:
+      "A medium-sized pup-forming species with considerable natural variation across its range. Shield fronds have divided tips forming pointed lobes that extend forward; they are typically tan to brown in spring and summer, with new green shields appearing in late summer and fall. Fertile fronds are generally narrow, held upright with the tips drooping, and bear a moderate covering of trichomes. Each fertile frond persists for two to three years. Spore patches form between the first and second frond division. The rhizome elongates over time, causing the bud to advance progressively away from the mounting surface.",
     difficultyReason:
       "Platycerium bifurcatum tolerates 40–90°F with brief dips near 25°F, handles light from filtered to full sun, and pups prolifically. It's the most forgiving platycerium in cultivation — what most beginners start with.",
     summary:
@@ -108,6 +113,8 @@ export const platyceriums: Platycerium[] = [
     hasHybrids: true,
     notableHybrids: ["P. ×diversifolium (bifurcatum × hillii)"],
     closestRelatives: ["P. bifurcatum", "P. willinckii"],
+    physicalDescription:
+      "A medium-sized pup-forming species closely related to P. bifurcatum, with all types of intergrades between the two found among cultivars. In its purest form, shield fronds are rounded along the top edge without lobes or undulations, and grow flat against the mounting surface rather than forming a debris-collecting nest. Fertile fronds are broad, deep green, and bear few trichomes — distinctly wider than those of P. bifurcatum, making them more susceptible to sunburn.",
     difficultyReason:
       "Platycerium hillii is a very hardy Queensland native that pups readily. Its shield fronds grow tight to the mount and the fertile fronds collect their own dew at night, so watering mistakes are forgiven more than most.",
     summary:
@@ -128,6 +135,8 @@ export const platyceriums: Platycerium[] = [
     hasHybrids: true,
     notableHybrids: ["P. bifurcatum 'Electrofolia' (bifurcatum × veitchii)"],
     closestRelatives: ["P. bifurcatum", "P. hillii"],
+    physicalDescription:
+      "A medium-sized pup-forming species adapted to semi-arid conditions, distinguished by a dense covering of white trichomes that gives the entire plant a silvery appearance. The tops of the shield fronds extend into thin, elongated fingers — a morphological trait unique within the genus. Under high light, fertile fronds are held erect and the trichome coverage is heaviest; in lower light they tend to droop, with reduced hair density and shorter shield fingers. Spore patches occur between the first and second frond division. In habitat the species grows on sandstone near springs and can endure months of drought.",
     difficultyReason:
       "Platycerium veitchii is rugged and drought-adapted — it withstands months without water in habitat and pups freely. The only real failure modes are overwatering or starving it of light, both of which are easy to avoid once you know.",
     summary:
@@ -147,6 +156,8 @@ export const platyceriums: Platycerium[] = [
     complex: "Bifurcatum complex",
     hasHybrids: false,
     closestRelatives: ["P. bifurcatum"],
+    physicalDescription:
+      "A medium-sized pup-forming species, though it produces pups less freely than P. bifurcatum. Shield fronds are very tall and deeply lobed; the tissue between the veins at the top typically dies away, leaving the upper portion as a skeletal network of veins. Fertile fronds are long and pendulous, emerging edgewise from the bud before arching downward. Trichome coverage is heavier on the underside than the upper surface. Some individuals develop a broad, flat cluster of pointed, recurving fingers at the fertile frond tips. The bud is comparatively small; newly received plants may remain dormant for an extended period before resuming growth.",
     difficultyReason:
       "Platycerium willinckii is easy overall and unfussy about medium light, moist moss, and moderate temperatures. It's slower and less cold-tolerant than P. bifurcatum, but has no specific problems that trip beginners up.",
     summary:
@@ -166,6 +177,8 @@ export const platyceriums: Platycerium[] = [
     isBigFive: true,
     hasHybrids: false,
     closestRelatives: ["P. superbum", "P. holttumii", "P. wandae"],
+    physicalDescription:
+      "A large solitary species. Shield fronds are deeply lobed and form a basket that collects debris and rainwater. The principal diagnostic feature is the fertile frond, which divides into two large lobes of roughly equal size, each bearing its own spore patch — distinguishing it from P. superbum, which produces a single undivided spore patch per frond. Juvenile specimens may produce undivided first fertile fronds, complicating identification. The bud bears light green trichomes and is partially concealed by frills from the shield margins. The species is slow to reach reproductive maturity.",
     difficultyReason:
       "Platycerium grande follows predictable requirements once set up — 50% shade cloth, filtered sun, 40–90°F — but it's slower-maturing and less cold-tolerant than P. superbum, and hard to source. Manageable, not beginner-friendly.",
     summary:
@@ -186,6 +199,8 @@ export const platyceriums: Platycerium[] = [
     hasHybrids: true,
     notableHybrids: ["Possible P. wandae × P. superbum (uncertain)"],
     closestRelatives: ["P. grande", "P. holttumii", "P. wandae"],
+    physicalDescription:
+      "One of the largest solitary species, native to eastern Australia. Shield fronds are deeply lobed and may exceed 1.3 m in height; their upper margins extend forward, creating a basket-like cavity behind them that collects organic debris and rainwater. Successive shields curl back into this cavity before being overlaid by new growth. Juvenile plants produce shields exclusively, alternating left and right, at a rate of two to four per year. Each fertile frond bears a single oval to subtriangular spore patch, brown at maturity, and terminates in fingers of variable length. The bud is clothed in light green trichomes and partially obscured by frills from adjacent shield margins.",
     difficultyReason:
       "Platycerium superbum is surprisingly tolerant of full sun, hardy to 30°F for short stretches, and forgiving about conditions. The main traps are sunburn on fertile fronds when it's too hot and prolonged cold — both easy to avoid.",
     summary:
@@ -212,6 +227,8 @@ export const platyceriums: Platycerium[] = [
       "P. wallichii",
       "P. holttumii",
     ],
+    physicalDescription:
+      "The largest species in the genus, reaching approximately one-third larger than P. superbum at maturity. Shield fronds are erect and lobed along their upper margins, forming a tall, open basket. Fertile fronds are bilobed, with a smaller elevated lobe and a larger pendulous lobe, each bearing a brown spore patch — a morphology shared with P. holttumii. The species is distinguished from other large solitary platyceriums by the small pointed frills along the shield margins near the bud, a feature unique to P. wandae. Notably, fertile fronds appear at a significantly younger developmental stage than in other giant species.",
     difficultyReason:
       "Platycerium wandae needs greenhouse-grade conditions — bright filtered shade (more than most platys), 60–100°F, damage below 40°F — but its requirements are consistent and well-understood. Demanding on environment, not on technique.",
     summary:
@@ -240,6 +257,8 @@ export const platyceriums: Platycerium[] = [
       "P. ellisii",
       "P. alcicorne",
     ],
+    physicalDescription:
+      "A tall, slender pup-forming species and the only member of the genus native to the Americas. Fertile fronds may exceed 2 m in habitat but are typically shorter in cultivation; they bear a dense covering of trichomes on the underside and a lighter covering above. The spore patch is dark brown, positioned at the second frond division — a placement shared with P. quadridichotomum. Shield fronds have an even, moderately dense trichome covering on both surfaces. The bud is prominent and clothed in long, pale green trichomes. Fertile frond tips may continue elongating after the spore patch has formed. Growth is sequential: shield fronds develop in early summer followed by fertile fronds later in the season.",
     difficultyReason:
       "Platycerium andinum is prone to rhizome rot when small and picky about mounting (rough bark, never palms). Mature care is moderate, but getting it through the early years takes attention, and propagating from spore is among the hardest in the genus.",
     summary:
@@ -260,6 +279,8 @@ export const platyceriums: Platycerium[] = [
     hasHybrids: true,
     notableHybrids: ["P. elemaria (andinum × elephantotis)"],
     closestRelatives: ["P. stemaria", "P. alcicorne"],
+    physicalDescription:
+      "A large pup-forming species distinguished by its massive, bright green shield fronds — a trait that has earned it the informal name 'lettuce staghorn.' Fertile fronds are broad, entire-margined (lacking the notches or fingers typical of other species), and pendulous, giving rise to the common name 'elephant ear fern.' Growth is strongly seasonal: the previous year's shields die in spring, followed by a flush of new shield growth in summer and fertile frond production later in the season. Trimming the dead shield tops allows new shields to develop more erectly. Mature basket-mounted specimens may exceed 1 m in height.",
     difficultyReason:
       "Platycerium elephantotis pups freely in bright warm conditions, but rot sets in quickly under low light. Growth is very seasonal — getting the light and water timing right across spring shed and summer regrowth is what separates thriving from failing.",
     summary:
@@ -277,6 +298,8 @@ export const platyceriums: Platycerium[] = [
     isHybrid: true,
     hasHybrids: false,
     closestRelatives: ["P. andinum", "P. elephantotis", "P. stemaria"],
+    physicalDescription:
+      "A confirmed hybrid (P. andinum x P. elephantotis), not a naturally occurring species. Fertile fronds are dark green with a waxy adaxial surface. Shield frond morphology and overall habit are intermediate between the parent species. The plant is medium-sized and pup-forming.",
     difficultyReason:
       "Platycerium elemaria tolerates cooler temperatures than either parent, which gives it more climate flexibility — but rot from overwatering is the main failure mode and catches most growers at least once.",
     summary:
@@ -295,6 +318,8 @@ export const platyceriums: Platycerium[] = [
     sporePattern: "between first & second frond division",
     hasHybrids: false,
     closestRelatives: ["P. alcicorne"],
+    physicalDescription:
+      "A small to medium pup-forming species closely allied to the African form of P. alcicorne, sharing a yellow-green coloration and waxy frond surface. Fertile fronds are consistently broad and divide into only two terminal points — the primary diagnostic distinction from P. alcicorne. Shield fronds are thin; the vein architecture creates air spaces up to 2.5 cm wide between successive shields, limiting the plant's capacity to store water. The rhizome advances upward rapidly, with shallow roots concentrated immediately below the bud. In habitat the species is epiphytic on mangroves, often on stems as narrow as 1.5 cm in diameter. Three forms are recognized in cultivation: the standard form, a 'diversifolium' form bearing additional terminal divisions on the fertile fronds, and a broad-leaved form with fertile fronds reaching 20 cm across.",
     difficultyReason:
       "Platycerium ellisii develops wide gaps between its shield fronds that don't hold water, so the plant depends almost entirely on sustained high humidity and solid shade. The microclimate has to be consistent — one dry stretch can be fatal.",
     summary:
@@ -314,6 +339,8 @@ export const platyceriums: Platycerium[] = [
     isBigFive: true,
     hasHybrids: false,
     closestRelatives: ["P. superbum", "P. grande", "P. wandae"],
+    physicalDescription:
+      "A large solitary species allied to P. grande, P. superbum, and P. wandae. Fertile fronds are bilobed: a smaller, elevated lobe and a larger, pendulous lobe, both bearing spore patches. Shield fronds are lobed and erect, forming an open basket. The bud is clothed in pale green trichomes. The species is distinguished from P. wandae by the absence of marginal frills on the shields near the bud — the principal diagnostic character separating the two. Juvenile specimens of the four related giants (P. grande, P. holttumii, P. superbum, P. wandae) are essentially indistinguishable until mature shield fronds develop.",
     difficultyReason:
       "Platycerium holttumii wants bright light plus consistently high humidity, and is noticeably less cold-tolerant than P. superbum. New imports often need a preventative terramycin treatment to survive the transition — not a beginner plant.",
     summary:
@@ -333,6 +360,8 @@ export const platyceriums: Platycerium[] = [
     sporePattern: "between first & second frond division",
     hasHybrids: false,
     closestRelatives: ["P. elephantotis", "P. alcicorne"],
+    physicalDescription:
+      "A medium-sized pup-forming species. Shield fronds are tall, broad, and wavy along the upper margin; they are relatively thin and develop spaces between them that accumulate debris. Shield senescence is notably rapid — the transition from green to brown occurs so quickly it can be mistaken for rot. Emerging shields are characteristically pure white. Fertile fronds are broad, often glossy on the adaxial surface and densely covered in trichomes beneath. A single plant may produce fertile fronds varying considerably in length and number of terminal tips, but all divide into two primary lobes, each subdividing once more. Two spore patches are borne per fertile frond, one on each primary lobe, turning dark brown at maturity.",
     difficultyReason:
       "Platycerium stemaria thrives in low-light microclimates that are easy to get wrong. Overly long fertile fronds are a warning sign that light is too low — and when that happens, spore-patch viability suffers before the visual signs become obvious.",
     summary:
@@ -352,6 +381,8 @@ export const platyceriums: Platycerium[] = [
     sporePattern: "on pods",
     hasHybrids: false,
     closestRelatives: ["P. ridleyi"],
+    physicalDescription:
+      "A pup-forming species with unusually thick, corky shield fronds that may be light green and waxy. At maturity the accumulated shields form a crown-shaped mass. Fertile fronds develop as a long, twisted cluster bearing spore patches on the underside of kidney-shaped lobes (spore pods) — a morphology shared only with P. ridleyi. The entire spore mass may detach and fall as a single unit. Pup formation follows a mechanism unique within the genus: the rhizome branches horizontally behind the shields, extends laterally, and emerges as a new bud at the same height as the parent, producing a ring of individuals around the host tree trunk.",
     difficultyReason:
       "Platycerium coronarium has cork-like shields that are lightweight and fool people into overwatering. Its horizontal rhizome also demands unusual mounting (wire basket or under-board) — neither is obvious from standard platy care. Becomes tough once it's dialed in, but the path there is fussy.",
     summary:
@@ -374,6 +405,8 @@ export const platyceriums: Platycerium[] = [
       "P. erawan (suspected hybrid or sport)",
     ],
     closestRelatives: ["P. alcicorne"],
+    physicalDescription:
+      "A pup-forming species with a shield frond morphology unique within the genus. Veins on the shield surface form tall ridges enclosing shallow valleys, creating a distinctive quilted or honeycombed pattern. New shields are thin and light green, darkening to a rich green at maturity. They cover the top of the rooting medium without collecting debris behind them. The valley architecture creates extensive air spaces between successive shields; in habitat these are colonized by ants and the orchid Cymbidiella rhodochila. The rhizome elongates progressively due to these inter-shield spaces, and the entire plant gradually assumes a spherical form. Fertile fronds are moderate in size; the species frequently produces two simultaneously. P. ridleyi bears superficially similar shield ridges, but in that species the ridges run continuously to the margin without forming enclosed valleys. The two species are not closely related.",
     difficultyReason:
       "Platycerium madagascariense is chlorine-sensitive — it needs RO, distilled, or filtered water — and really wants a high-humidity greenhouse to thrive. It tolerates a wide temperature range but rewards precise, controlled conditions that home setups rarely provide.",
     summary:
@@ -392,6 +425,8 @@ export const platyceriums: Platycerium[] = [
     sporePattern: "between first & second frond division",
     hasHybrids: false,
     closestRelatives: ["P. stemaria", "P. andinum"],
+    physicalDescription:
+      "Among the smallest pup-forming species. The epithet refers to the fertile fronds, which typically branch to produce four terminal tips. Fertile fronds are pendulous with undulate margins; the adaxial surface may develop stellate trichomes under high light, while the abaxial surface bears a dense covering of tan trichomes. The spore patch is dark brown, positioned at the second frond division. Shield fronds are disproportionately tall for the plant's overall size, spreading outward at the apex without lobing, and lack the corky tissue characteristic of most species. During the prolonged dry dormancy of its native habitat, shield fronds die and fertile fronds roll lengthwise into tubes, exposing the trichome-covered undersurface outward and reducing evaporative surface area. Uniquely among platyceriums, the species is lithophytic rather than epiphytic in habitat, growing on limestone outcrops on the drier western coast of Madagascar.",
     difficultyReason:
       "Platycerium quadridichotomum is the rarest and least-understood platycerium. Its native habitat has an extreme dry dormancy, but expert growers disagree sharply about whether to enforce that dormancy in cultivation — there is no settled playbook.",
     summary:
@@ -411,6 +446,8 @@ export const platyceriums: Platycerium[] = [
     sporePattern: "on pods",
     hasHybrids: false,
     closestRelatives: ["P. coronarium", "P. madagascariense"],
+    physicalDescription:
+      "The smallest solitary species in the genus, rarely exceeding 1 m across the fertile fronds. Fertile fronds — particularly in juvenile specimens — closely resemble deer antlers, making this species the most literal embodiment of the common name 'staghorn fern.' Spore patches develop on the underside of spoon-shaped lobes (spore pods), a morphology shared only with P. coronarium; the entire spore mass tends to be released as a single unit. Shield fronds bear tall, continuous vein ridges that extend to the margin, creating inter-shield air spaces that in habitat are packed with ant-deposited debris in the lower two-thirds. These spaces cause the rhizome to become notably elongated. Mature shields are tan and somewhat lustrous. The bud is small and inconspicuous.",
     difficultyReason:
       "Platycerium ridleyi grows high in the tree canopy in habitat where air circulation is constant — replicating that indoors is the real barrier, not humidity alone. It produces only spore pods (no pups), so even propagation is hard. A grail plant for a reason.",
     summary:
@@ -431,6 +468,8 @@ export const platyceriums: Platycerium[] = [
     isBigFive: true,
     hasHybrids: false,
     closestRelatives: ["P. holttumii", "P. grande", "P. superbum", "P. wandae"],
+    physicalDescription:
+      "A large solitary species reaching approximately 1.3 m in habitat, though typically smaller in cultivation. Shield fronds are tall and spreading, with numerous rounded lobes along the upper margins forming an open basket. Shields may be fully brown while fertile fronds remain green. Fertile fronds display prominently raised veins on the adaxial surface. Frond morphology is highly variable in cultivation: a primary pendulous lobe bearing the main spore patch may be flanked by one or more secondary lobes (some fertile, some sterile), and in well-developed specimens the frond can become fan-shaped, with outermost lobes grading into shield-like structures. The fertile region extends forward and may bear marginal points.",
     difficultyReason:
       "Platycerium wallichii more often dies from stalled dormancy than outright rot — plants enter dormancy and simply never come back. Growers disagree on whether to withhold water during the dry season or not, and pups are extremely rare, so you mostly get one shot per plant.",
     summary:

@@ -1,21 +1,5 @@
-import { Hero } from "@/components/sections/Hero";
-import { About } from "@/components/sections/About";
-import { Experience } from "@/components/sections/Experience";
-import { Skills } from "@/components/sections/Skills";
-import { Contact } from "@/components/sections/Contact";
-import { Animations } from "@/components/shared/Animations";
-import { Marquee } from "@/components/shared/Marquee";
+import { HomeDesktop } from "@/components/sections/HomeDesktop";
 
 export default function Home() {
-  return (
-    <>
-      <Animations />
-      <Hero />
-      <Marquee />
-      <About />
-      <Experience />
-      <Skills />
-      <Contact />
-    </>
-  );
+  return <HomeDesktop />;
 }

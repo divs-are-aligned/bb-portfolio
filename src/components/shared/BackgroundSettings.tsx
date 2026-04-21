@@ -194,16 +194,6 @@ export function BackgroundSettings() {
           </Field>
 
           <Slider
-            label="Density"
-            hint={`${config.spacing}px spacing`}
-            min={14}
-            max={60}
-            step={1}
-            value={config.spacing}
-            onChange={(spacing) => setConfig({ spacing })}
-          />
-
-          <Slider
             label="Symbol size"
             hint={`${config.size}px`}
             min={2}

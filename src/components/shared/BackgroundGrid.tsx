@@ -132,7 +132,6 @@ export function BackgroundGrid() {
     let dpr = 1;
     let cells: GridCell[] = [];
     const mouse = { x: -9999, y: -9999 };
-    let scrollProgress = 0;
     let raf = 0;
 
     const buildGrid = () => {
@@ -166,13 +165,6 @@ export function BackgroundGrid() {
       buildGrid();
     };
 
-    const updateScroll = () => {
-      const max = Math.max(
-        document.documentElement.scrollHeight - window.innerHeight,
-        1,
-      );
-      scrollProgress = Math.min(window.scrollY / max, 1);
-    };
 
     const onMouse = (e: PointerEvent) => {
       mouse.x = e.clientX;
@@ -236,13 +228,14 @@ export function BackgroundGrid() {
       ctx.lineWidth = cfg.strokeWidth;
       ctx.lineCap = "round";
 
-      const densityFloor = 0.6 + scrollProgress * 0.4;
       const paused = pausedRef.current;
 
       for (const cell of cells) {
         const mask = columnMask(cell.x);
         const topFade = Math.min(1, cell.y / TOP_FADE);
-        let visibility = mask * densityFloor * topFade;
+        // Vertical density gradient: sparse at top (0.1), dense at bottom (1.0)
+        const verticalDensity = 0.1 + 0.9 * (cell.y / height);
+        let visibility = mask * verticalDensity * topFade;
 
         const dx = cell.x - mouse.x;
         const dy = cell.y - mouse.y;
@@ -277,18 +270,15 @@ export function BackgroundGrid() {
     };
 
     resize();
-    updateScroll();
     tick();
 
     window.addEventListener("resize", resize);
-    window.addEventListener("scroll", updateScroll, { passive: true });
     window.addEventListener("pointermove", onMouse, { passive: true });
     window.addEventListener("pointerleave", onLeave);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", updateScroll);
       window.removeEventListener("pointermove", onMouse);
       window.removeEventListener("pointerleave", onLeave);
     };

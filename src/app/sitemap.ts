@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { platyceriums } from "@/data/platycerium";
 
 export const dynamic = "force-static";
 
@@ -6,6 +7,16 @@ const BASE_URL = "https://bartbudak.io";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+
+  const speciesPages = platyceriums
+    .filter((p) => p.dataFilled)
+    .map((p) => ({
+      url: `${BASE_URL}/plants/platycerium/${p.slug}/`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+
   return [
     {
       url: `${BASE_URL}/`,
@@ -31,5 +42,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    ...speciesPages,
   ];
 }

@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PlatyceriumCardImage } from "./PlatyceriumGallery";
 import { speciesImages } from "@/data/platyceriumImages";
@@ -33,9 +31,6 @@ const propagationLabel: Record<Propagation, string> = {
 };
 
 export function PlatyceriumCard({ p }: { p: Platycerium }) {
-  const [expanded, setExpanded] = useState(false);
-  const hasMoreNotes =
-    Boolean(p.notes) && (!p.summary || p.notes !== p.summary);
 
   return (
     <article
@@ -108,7 +103,7 @@ export function PlatyceriumCard({ p }: { p: Platycerium }) {
 
         <dl className="space-y-1.5 text-sm">
           <Row label="Native to">
-            {p.nativeOrigin.length > 0 ? p.nativeOrigin.join(", ") : "—"}
+            {p.nativeOrigin.length > 0 ? p.nativeOrigin.join(", ") : "\u2014"}
           </Row>
           {p.biogeographicalRegion && (
             <Row label="Region">
@@ -128,28 +123,14 @@ export function PlatyceriumCard({ p }: { p: Platycerium }) {
           </p>
         )}
 
-        {hasMoreNotes && (
-          <>
-            {expanded && (
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {p.notes}
-              </p>
-            )}
-            <button
-              type="button"
-              onClick={() => setExpanded((v) => !v)}
-              aria-expanded={expanded}
-              className="mt-1 flex w-fit items-center gap-1 font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {expanded ? "Show less" : "Read more"}
-              <ChevronDownIcon
-                className={`size-3 transition-transform ${expanded ? "rotate-180" : ""}`}
-              />
-            </button>
-          </>
-        )}
-
-        {!p.dataFilled && (
+        {p.dataFilled ? (
+          <a
+            href={`/plants/platycerium/${p.slug}/`}
+            className="mt-auto flex w-fit items-center gap-1 pt-1 font-mono text-xs uppercase tracking-[0.12em] text-primary transition-colors hover:text-foreground"
+          >
+            Full care guide &rarr;
+          </a>
+        ) : (
           <p className="mt-auto pt-2 font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
             Entry pending · data not yet verified
           </p>

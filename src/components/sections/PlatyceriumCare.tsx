@@ -7,15 +7,17 @@ import {
   SproutIcon,
   BugIcon,
   SunIcon,
+  ShieldAlertIcon,
 } from "lucide-react";
 import { careSections, type CareSection } from "@/data/platyceriumCare";
 
 const ICONS: Record<string, React.ReactNode> = {
-  droplets: <DropletsIcon className="size-7" />,
-  scissors: <ScissorsIcon className="size-7" />,
-  sprout: <SproutIcon className="size-7" />,
-  bug: <BugIcon className="size-7" />,
-  sun: <SunIcon className="size-7" />,
+  droplets: <DropletsIcon className="size-5" />,
+  scissors: <ScissorsIcon className="size-5" />,
+  sprout: <SproutIcon className="size-5" />,
+  bug: <BugIcon className="size-5" />,
+  sun: <SunIcon className="size-5" />,
+  "shield-alert": <ShieldAlertIcon className="size-5" />,
 };
 
 export function PlatyceriumCare() {
@@ -35,7 +37,7 @@ export function PlatyceriumCare() {
       </p>
 
       {/* Category cards — 5 across on one row */}
-      <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-5">
+      <div className="mb-6 flex flex-wrap gap-2">
         {careSections.map((s) => {
           const isActive = activeId === s.id;
           return (
@@ -45,16 +47,14 @@ export function PlatyceriumCare() {
               onClick={() => setActiveId(isActive ? null : s.id)}
               aria-expanded={isActive}
               className={[
-                "flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border text-center transition-colors",
+                "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                 isActive
                   ? "border-primary bg-primary/10 text-primary"
-                  : "border-border/60 bg-card/40 text-muted-foreground hover:border-border hover:text-foreground",
+                  : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground",
               ].join(" ")}
             >
-              <span className={isActive ? "text-primary" : "text-muted-foreground"}>
-                {ICONS[s.icon]}
-              </span>
-              <span className="text-sm font-medium">{s.title}</span>
+              {ICONS[s.icon]}
+              {s.title}
             </button>
           );
         })}
