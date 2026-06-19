@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# bb-portfolio
 
-## Getting Started
+Personal portfolio and Platycerium (staghorn fern) catalog for
+[bartbudak.io](https://bartbudak.io).
 
-First, run the development server:
+Built as a fully static site and deployed to Firebase Hosting.
+
+## Stack
+
+- **[Next.js 16](https://nextjs.org)** (App Router) with `output: "export"` —
+  the whole site is pre-rendered to static HTML in `out/`.
+- **[@base-ui/react](https://base-ui.com)** for accessible UI primitives
+  (dialog, tabs, tooltip, etc.); shadcn-style wrappers live in
+  `src/components/ui`.
+- **[GSAP](https://gsap.com)** (`@gsap/react`) for scroll/entry animations.
+- **[D3](https://d3js.org)** + `topojson-client` for the biogeographical map
+  and phylogeny tree in the Platycerium section.
+- **Tailwind CSS v4** (via `@tailwindcss/postcss`).
+- **[Firebase](https://firebase.google.com)** — Firestore + Storage back the
+  "Plant S.O.S." help form; Firebase Hosting serves the static export.
+
+> **Note:** this repo pins a specific, sometimes-modified build of Next.js.
+> When in doubt about Next behavior, check `node_modules/next/dist/docs/`
+> rather than relying on general Next.js knowledge. See `AGENTS.md`.
+
+## Prerequisites
+
+- Node.js 20 (matches the Cloud Functions runtime in `firebase.json`).
+- [pnpm](https://pnpm.io) (the repo ships a `pnpm-lock.yaml`).
+- [Firebase CLI](https://firebase.google.com/docs/cli) for deploys
+  (`npm i -g firebase-tools`).
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The Firebase **web** config is split between hardcoded public values
+(`authDomain`, `projectId`, `storageBucket` for the `bb-folio` project, in
+`src/lib/firebase.ts`) and three values supplied via the environment. Create a
+`.env.local` for local development:
 
-## Learn More
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+```
 
-To learn more about Next.js, take a look at the following resources:
+These are `NEXT_PUBLIC_*`, so they are inlined into the client bundle and are
+**not secret** — access is constrained by the Firebase security rules, not by
+hiding the keys.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Command                | Description                                          |
+| ---------------------- | ---------------------------------------------------- |
+| `pnpm dev`             | Start the Next.js dev server.                        |
+| `pnpm build`           | Static export to `out/`.                             |
+| `pnpm preview`         | Serve the built `out/` directory locally (`serve`).  |
+| `pnpm lint`            | Run ESLint.                                          |
+| `pnpm deploy`          | Build, then `firebase deploy --only hosting`.        |
+| `pnpm deploy:preview`  | Deploy a temporary Firebase Hosting preview channel. |
 
-## Deploy on Vercel
+## Building & deploying
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The site is a static export hosted on Firebase Hosting (`hosting.public` is
+`out/` in `firebase.json`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm build          # produces ./out
+pnpm deploy         # build + firebase deploy --only hosting
+```
+
+To preview a deploy on a throwaway channel before promoting it:
+
+```bash
+pnpm deploy:preview
+```
+
+### Firebase security rules
+
+Firestore and Storage rules are wired into `firebase.json`
+(`firestore.rules` and `storage.rules`):
+
+- **Firestore** — deny-all by default; the public site may only **create**
+  documents in the `plant-help` collection (validated shape; no client
+  read/update/delete).
+- **Storage** — deny-all by default; the public site may only **create**
+  image objects (≤ 8 MB) under `plant-help/`.
+
+Deploy rules alongside (or independently of) hosting:
+
+```bash
+firebase deploy --only firestore:rules,storage:rules
+# or everything:
+firebase deploy
+```
+
+## Project layout
+
+```
+src/
+  app/                 # App Router routes, metadata, sitemap/robots, OG image
+  components/
+    layout/            # Navbar, Footer, MobileNav
+    sections/          # Page sections (Platycerium catalog, map, tree, …)
+    shared/            # Cross-cutting components & providers
+    ui/                # base-ui / shadcn-style primitives
+  data/                # Static content (Platycerium species, care, phylogeny)
+  lib/                 # Firebase init, utilities
+functions/             # Firebase Cloud Functions (Node 20)
+scripts/               # One-off maintenance scripts
+```

@@ -1,0 +1,32 @@
+rules_version = '2';
+
+// Cloud Storage security rules for bb-folio.
+//
+// Default posture: deny everything. The public PlantHelp form uploads photos
+// to `plant-help/` before submitting the Firestore document. Visitors may
+// only CREATE (write a new object) under that prefix, with image-only
+// content types and a size cap. No client read / update / delete — download
+// URLs are produced via getDownloadURL() tokens, which work independently of
+// read rules.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── plant-help uploads ──────────────────────────────────────────────
+    match /plant-help/{imageId} {
+      allow read, delete: if false;
+
+      // Allow create only (no overwriting existing objects), image MIME only,
+      // max ~8 MB.
+      allow write: if resource == null
+        && request.resource != null
+        && request.resource.size <= 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // ── everything else ─────────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

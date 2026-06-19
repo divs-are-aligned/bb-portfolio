@@ -1,0 +1,62 @@
+rules_version = '2';
+
+// Firestore security rules for bb-folio.
+//
+// Default posture: deny everything. The public site only ever needs to
+// CREATE new "plant help" submissions from the PlantHelp form — it never
+// reads, updates, or deletes them from the client. Anything an admin needs
+// is done through the Admin SDK (Cloud Functions / console), which bypasses
+// these rules entirely.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── plant-help submissions ──────────────────────────────────────────
+    // Unauthenticated visitors may only CREATE a document with a known,
+    // type-checked shape. No client read / update / delete.
+    match /plant-help/{docId} {
+      allow read, update, delete: if false;
+
+      allow create: if isValidPlantHelp(request.resource.data);
+    }
+
+    // ── everything else ─────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// Validate the shape of a plant-help submission. Keeps junk / abuse out of
+// the collection without requiring auth.
+function isValidPlantHelp(data) {
+  return
+    // Exactly the expected set of keys, nothing extra.
+    data.keys().hasOnly([
+      'name', 'email', 'watering', 'soil', 'light',
+      'pests', 'notes', 'images', 'panicMode', 'createdAt'
+    ])
+    && data.keys().hasAll([
+      'name', 'email', 'images', 'panicMode', 'createdAt'
+    ])
+
+    // Required identity fields.
+    && data.name is string && data.name.size() > 0 && data.name.size() <= 200
+    && data.email is string && data.email.size() > 0 && data.email.size() <= 320
+
+    // Optional free-text fields (present but possibly empty strings).
+    && data.watering is string && data.watering.size() <= 40
+    && data.soil is string && data.soil.size() <= 40
+    && data.light is string && data.light.size() <= 40
+    && data.pests is string && data.pests.size() <= 40
+    && data.notes is string && data.notes.size() <= 5000
+
+    && data.panicMode is bool
+
+    // Image URLs: up to 5, each a string. (Files themselves are validated
+    // by storage.rules; here we only bound the array.)
+    && data.images is list && data.images.size() <= 5
+
+    // Server timestamp only — prevents clients backdating / spoofing.
+    && data.createdAt == request.time;
+}
