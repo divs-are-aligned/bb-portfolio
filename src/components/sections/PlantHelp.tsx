@@ -40,6 +40,11 @@ const PESTS = [
   { value: "refuse", label: "I refuse to look" },
 ] as const;
 
+/* ── Upload constraints (mirror storage.rules) ──────────── */
+const MAX_FILE_BYTES = 8 * 1024 * 1024; // 8 MB, matches storage.rules
+const MAX_FILE_MB = 8;
+const MAX_IMAGES = 5;
+
 type FormState = {
   name: string;
   email: string;
@@ -79,20 +84,42 @@ export function PlantHelp() {
   /* ── Image handling ──────────────────────────────────── */
 
   const addImages = useCallback((files: FileList | File[]) => {
-    const newFiles = Array.from(files).filter((f) =>
-      f.type.startsWith("image/"),
-    );
+    const incoming = Array.from(files);
+    const rejected: string[] = [];
+
+    const newFiles = incoming.filter((f) => {
+      if (!f.type.startsWith("image/")) {
+        rejected.push(`${f.name || "file"} (not an image)`);
+        return false;
+      }
+      if (f.size > MAX_FILE_BYTES) {
+        rejected.push(`${f.name || "file"} (over ${MAX_FILE_MB} MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    if (rejected.length > 0) {
+      setError(
+        `Skipped ${rejected.length} file${rejected.length > 1 ? "s" : ""}: ${rejected.join(", ")}. Images only, max ${MAX_FILE_MB} MB each.`,
+      );
+    } else {
+      setError("");
+    }
+
     if (newFiles.length === 0) return;
 
     setForm((f) => ({
       ...f,
-      images: [...f.images, ...newFiles].slice(0, 5),
+      images: [...f.images, ...newFiles].slice(0, MAX_IMAGES),
     }));
 
     newFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setPreviews((prev) => [...prev, e.target?.result as string].slice(0, 5));
+        setPreviews((prev) =>
+          [...prev, e.target?.result as string].slice(0, MAX_IMAGES),
+        );
       };
       reader.readAsDataURL(file);
     });
@@ -119,6 +146,19 @@ export function PlantHelp() {
 
   const submitForm = async (formData: FormState) => {
     if (!formData.name.trim() || !formData.email.trim()) return;
+
+    // Final guard: never upload anything that isn't an image within the cap,
+    // matching storage.rules so a rejected file fails client-side, not at the
+    // bucket.
+    const invalid = formData.images.find(
+      (file) => !file.type.startsWith("image/") || file.size > MAX_FILE_BYTES,
+    );
+    if (invalid) {
+      setError(
+        `"${invalid.name || "A file"}" can't be uploaded — images only, max ${MAX_FILE_MB} MB each.`,
+      );
+      return;
+    }
 
     setSending(true);
     setError("");
