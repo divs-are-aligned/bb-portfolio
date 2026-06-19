@@ -136,6 +136,9 @@ export function PlatyceriumTree() {
     // Labels for leaf nodes
     const leaves = node.filter((d) => !d.children);
 
+    const isLinked = (d: d3.HierarchyNode<TreeDatum>) =>
+      !!d.data.slug && knownSlugs.has(d.data.slug);
+
     leaves
       .append("text")
       .attr("dy", "0.35em")
@@ -144,31 +147,39 @@ export function PlatyceriumTree() {
       .attr("font-size", "12px")
       .attr("font-family", "var(--font-dm-sans), sans-serif")
       .attr("font-style", "italic")
-      .attr("fill", (d) => {
-        const slug = d.data.slug;
-        return slug && knownSlugs.has(slug) ? colorFg : colorMuted;
-      })
-      .attr("cursor", (d) => {
-        const slug = d.data.slug;
-        return slug && knownSlugs.has(slug) ? "pointer" : "default";
-      })
+      .attr("fill", (d) => (isLinked(d) ? colorFg : colorMuted))
+      .attr("cursor", (d) => (isLinked(d) ? "pointer" : "default"))
+      // Keyboard a11y: linked species become focusable buttons with labels.
+      .attr("role", (d) => (isLinked(d) ? "button" : null))
+      .attr("tabindex", (d) => (isLinked(d) ? 0 : null))
+      .attr("aria-label", (d) =>
+        isLinked(d) ? `${d.data.name} — view care guide` : null,
+      )
       .text((d) => d.data.name)
       .on("click", (_, d) => {
-        if (d.data.slug && knownSlugs.has(d.data.slug)) {
-          scrollToCard(d.data.slug);
-        }
+        if (isLinked(d)) scrollToCard(d.data.slug!);
+      })
+      .on("keydown", function (event: KeyboardEvent, d) {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        if (!isLinked(d)) return;
+        event.preventDefault();
+        scrollToCard(d.data.slug!);
       })
       .on("pointerenter", function (_, d) {
-        if (d.data.slug && knownSlugs.has(d.data.slug)) {
+        if (isLinked(d)) {
           d3.select(this).attr("fill", colorPrimary);
         }
       })
       .on("pointerleave", function (_, d) {
-        const slug = d.data.slug;
-        d3.select(this).attr(
-          "fill",
-          slug && knownSlugs.has(slug) ? colorFg : colorMuted,
-        );
+        d3.select(this).attr("fill", isLinked(d) ? colorFg : colorMuted);
+      })
+      .on("focus", function (_, d) {
+        if (isLinked(d)) {
+          d3.select(this).attr("fill", colorPrimary);
+        }
+      })
+      .on("blur", function (_, d) {
+        d3.select(this).attr("fill", isLinked(d) ? colorFg : colorMuted);
       });
 
     // Hover: enlarge leaf circle
@@ -193,7 +204,12 @@ export function PlatyceriumTree() {
         </p>
       </div>
       <div className="overflow-hidden rounded-md" style={{ touchAction: "none" }}>
-        <svg ref={svgRef} className="w-full" />
+        <svg
+          ref={svgRef}
+          className="w-full"
+          role="group"
+          aria-label="Platycerium phylogenetic tree. Use Tab to move between species and Enter or Space to open a species care guide."
+        />
       </div>
       <p className="mt-4 text-xs text-muted-foreground">
         Grouping based on DNA testing. Source: American Journal of Botany,
