@@ -69,6 +69,11 @@ export function PlatyceriumMap() {
   const [selected, setSelected] = useState<BiogeographicalRegion | null>(null);
 
   useEffect(() => {
+    // Guard against the async fetch resolving after unmount, which would
+    // otherwise try to mutate a detached SVG / call setState on an
+    // unmounted component.
+    let cancelled = false;
+
     const svg = d3.select(svgRef.current);
     const width = 960;
     const height = 480;
@@ -83,8 +88,11 @@ export function PlatyceriumMap() {
 
     const path = d3.geoPath().projection(projection);
 
+    const toggleRegion = (region: BiogeographicalRegion) =>
+      setSelected((prev) => (prev === region ? null : region));
+
     d3.json<Topology>(WORLD_TOPO_URL).then((topo) => {
-      if (!topo) return;
+      if (cancelled || !topo) return;
       const countries = topojson.feature(
         topo,
         topo.objects.countries as GeometryCollection,
@@ -113,6 +121,18 @@ export function PlatyceriumMap() {
           return COUNTRY_REGION[id] ? 0.8 : 0.3;
         })
         .attr("data-region", (d) => COUNTRY_REGION[d.id as string] ?? "")
+        // Keyboard a11y: interactive (region) countries become focusable
+        // buttons with labels; non-region land is inert/aria-hidden.
+        .attr("role", (d) => (COUNTRY_REGION[d.id as string] ? "button" : null))
+        .attr("tabindex", (d) => (COUNTRY_REGION[d.id as string] ? 0 : null))
+        .attr("aria-hidden", (d) =>
+          COUNTRY_REGION[d.id as string] ? null : "true",
+        )
+        .attr("aria-label", (d) => {
+          const region = COUNTRY_REGION[d.id as string];
+          if (!region) return null;
+          return `${regionLabel[region]} — show native species`;
+        })
         .style("cursor", (d) => (COUNTRY_REGION[d.id as string] ? "pointer" : "default"))
         .on("pointerenter", function (_, d) {
           const region = COUNTRY_REGION[d.id as string];
@@ -122,12 +142,31 @@ export function PlatyceriumMap() {
         .on("pointerleave", function () {
           setHovered(null);
         })
+        .on("focus", function (_, d) {
+          const region = COUNTRY_REGION[d.id as string];
+          if (!region) return;
+          setHovered(region);
+        })
+        .on("blur", function () {
+          setHovered(null);
+        })
         .on("click", function (_, d) {
           const region = COUNTRY_REGION[d.id as string];
           if (!region) return;
-          setSelected((prev) => (prev === region ? null : region));
+          toggleRegion(region);
+        })
+        .on("keydown", function (event: KeyboardEvent, d) {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          const region = COUNTRY_REGION[d.id as string];
+          if (!region) return;
+          event.preventDefault();
+          toggleRegion(region);
         });
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Highlight the active region (hovered takes priority, then selected).
@@ -190,7 +229,8 @@ export function PlatyceriumMap() {
       <svg
         ref={svgRef}
         className="w-full"
-        aria-label="World map showing Platycerium biogeographical regions"
+        role="group"
+        aria-label="World map showing Platycerium biogeographical regions. Use Tab to move between regions and Enter or Space to view a region's native species."
       />
 
       {selected && (
