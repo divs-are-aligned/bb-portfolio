@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 const socials = [
   {
     label: "Email",
-    href: "mailto:bartosz.budak@gmail.com",
+    href: "mailto:bartoszbudak@gmail.com",
     icon: MailIcon,
-    display: "bartosz.budak@gmail.com",
+    display: "bartoszbudak@gmail.com",
     external: false,
   },
   {
