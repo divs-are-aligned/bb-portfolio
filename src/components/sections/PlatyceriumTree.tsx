@@ -25,7 +25,12 @@ function phyloToTree(node: PhyloNode): TreeDatum {
 
 function scrollToCard(slug: string) {
   const el = document.getElementById(`platycerium-${slug}`);
-  if (!el) return;
+  if (!el) {
+    // Card isn't on this page (e.g. a species detail page) — send the
+    // visitor to the catalog and let the hash scroll to the right card.
+    window.location.href = `/plants/platycerium/#platycerium-${slug}`;
+    return;
+  }
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   el.classList.add("ring-2", "ring-primary", "ring-offset-2", "ring-offset-background");
   setTimeout(() => {
