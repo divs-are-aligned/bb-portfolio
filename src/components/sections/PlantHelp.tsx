@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
@@ -68,6 +68,44 @@ export function PlantHelp() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [previews, setPreviews] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
+
+  /* ── Derive previews 1:1 from the committed images array ──
+     Using object URLs keyed to the exact same list keeps previews and
+     images perfectly in sync (the old FileReader-per-file approach raced
+     and desynced the two arrays, so removeImage() removed the wrong one).
+     Each URL is revoked when its file leaves the list or on unmount. */
+  const objectUrls = useRef<Map<File, string>>(new Map());
+  useEffect(() => {
+    const cache = objectUrls.current;
+    const nextUrls = form.images.map((file) => {
+      let url = cache.get(file);
+      if (!url) {
+        url = URL.createObjectURL(file);
+        cache.set(file, url);
+      }
+      return url;
+    });
+
+    // Revoke URLs for files no longer in the list.
+    const live = new Set(form.images);
+    for (const [file, url] of cache) {
+      if (!live.has(file)) {
+        URL.revokeObjectURL(url);
+        cache.delete(file);
+      }
+    }
+
+    setPreviews(nextUrls);
+  }, [form.images]);
+
+  // Revoke everything on unmount.
+  useEffect(() => {
+    const cache = objectUrls.current;
+    return () => {
+      for (const url of cache.values()) URL.revokeObjectURL(url);
+      cache.clear();
+    };
+  }, []);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [dragActive, setDragActive] = useState(false);
@@ -84,18 +122,12 @@ export function PlantHelp() {
     );
     if (newFiles.length === 0) return;
 
+    // Previews are derived from this array (see the effect above), so we
+    // only ever mutate images — the two can no longer drift apart.
     setForm((f) => ({
       ...f,
       images: [...f.images, ...newFiles].slice(0, 5),
     }));
-
-    newFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviews((prev) => [...prev, e.target?.result as string].slice(0, 5));
-      };
-      reader.readAsDataURL(file);
-    });
   }, []);
 
   const removeImage = (index: number) => {
@@ -103,7 +135,6 @@ export function PlantHelp() {
       ...f,
       images: f.images.filter((_, i) => i !== index),
     }));
-    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleDrop = useCallback(
